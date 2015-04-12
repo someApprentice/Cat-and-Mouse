@@ -6,7 +6,7 @@ class World {
 		$this->createMap();
 	}
 
-	public function createMap($m = 10, $n = 10) {
+	private function createMap($m = 10, $n = 10) {
 		$this->map = array_fill(0, $m, array_fill(0, $n, ''));
 	}
 
@@ -26,15 +26,17 @@ class World {
 		$this->map[$coordinate['y']][$coordinate['x']] = '';
 	}
 
-	public function moveAnimal(Animal $animal) {
-		$this->removeAnimalFromMap($animal);
+	public function moveAnimal(array $from, array $to) {
+		if (!isset($from['x']) and !isset($from['y']) and !isset($to['x']) and !isset($to['y'])) {
+			return false;
+		}
 
-		$animal->move();
+		$this->map[$to['y']][$to['x']] = $this->map[$from['y']][$from['x']];
 
-		$this->addAnimalToMap($animal);
+		$this->map[$from['y']][$from['x']] = '';
 	}
 
-	public function __destruct() {
+	public function printMap() {
 		foreach ($this->map as $y => $x) {
 			foreach ($x as $value) {
 				if ($value == '') {

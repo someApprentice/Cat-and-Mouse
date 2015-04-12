@@ -1,7 +1,10 @@
 <?php
 $world = new World();
 
-$mouse = new Mouse($world);
-$world->addAnimalToMap($mouse);
+$mouse = new Mouse($world, 3, 5, 5);
+$cat = new Cat ($world, 2, 7, 7);
 
-$world->moveAnimal($mouse);
+$search = $mouse->searchTheAnimal($world, $cat);
+$mouse->move($world, $cat);
+
+$world->printMap();

@@ -1,15 +1,18 @@
 <?php
 class Animal {
-	private $x;
-	private $y;
+	protected $x;
+	protected $y;
 
-	private $overview;
+	protected $view;
 
-	public function __construct(World $world, $x = 0, $y = 0) {
+
+	public function __construct(World $world, $view = 1, $x = 0, $y = 0) {
+		$this->view = $view;
+
 		$this->x = $x;
 		$this->y = $y;
 
-		$this->overviewWorld($world);
+		$world->addAnimalToMap($this);
 	}
 
 	public function getCoordinate() {
@@ -20,22 +23,34 @@ class Animal {
 	}
 
 	public function overviewWorld(World $world) {
-		$this->overview = $world->getMap();
+		$map = $world->getMap();
+
+		$coordinate = $this->getCoordinate();
+
+		foreach($map as $y => $x) {
+			foreach($x as $key => $value) {
+				if ((($y > $coordinate['y'] - $this->view) and ($y <=  $coordinate['y'] + $this->view)) and ($key > $coordinate['y'] - $this->view) and ($key <=  $coordinate['y'] + $this->view)) {
+					$anothermap[$y][$key] = $value;
+				}
+			}
+		}
+
+		return $anothermap;
 	}
 
-	public function goUp() {
+	public function searchTheAnimal(World $world, Animal $animal) {
+		$overview = $this->overviewWorld($world);
 
-	}
+		$search = array();
 
-	public function goDown() {
+		foreach($overview as $y => $x) {
+			foreach($x as $key => $value) {
+				if ($value == $animal) {
+					$search[$y][$key] = $animal;
+				}
+			}
+		}
 
-	}
-
-	public function goRight() {
-		$this->x += 1;
-	}
-
-	public function goLeft() {
-		$this->x += -1;
+		return $search;
 	}
 }
