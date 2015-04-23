@@ -1,12 +1,18 @@
 <?php
 class World {
-	private $map = array();
+	private $m;
+	private $n;
+
+	protected $map = array();
 
 	public function __construct() {
 		$this->createMap();
 	}
 
 	private function createMap($m = 10, $n = 10) {
+		$this->m = $m;
+		$this->n = $n;
+
 		$this->map = array_fill(0, $m, array_fill(0, $n, ''));
 	}
 
@@ -31,6 +37,36 @@ class World {
 			return false;
 		}
 
+		//Неудачная попытка не дать объекту выйти за рамки карты
+		switch ($to['y']) { 
+			case ($to['y'] > $this->m):
+				$to['y'] = $to['y'] - ($to['y'] - $this->m);
+			break;
+
+			case ($to['y'] < 0):
+				$to['y'] = $to['y'] - ($to['y'] - $from['y']);
+			break;
+			
+			default:
+				$to['y'] = $to['y'];
+			break;
+		}
+
+
+		switch ($to['x']) {
+			case ($to['x'] > $this->m):
+				$to['x'] = $to['x'] - ($to['x'] - $this->m);
+			break;
+
+			case ($to['x'] < 0):
+				$to['x'] = $to['x'] - ($to['x'] - $from['x']);
+			break;
+			
+			default:
+				$to['x'] = $to['x'];
+			break;
+		}
+
 		$this->map[$to['y']][$to['x']] = $this->map[$from['y']][$from['x']];
 
 		$this->map[$from['y']][$from['x']] = '';
@@ -42,11 +78,11 @@ class World {
 				if ($value == '') {
 					echo ' _ ';
 				} else {
-					echo ' @ ';
+					echo ' '. $value->symbol . ' ';
 				}
 			}
 
-			echo "<br>";
+			echo "\n";
 		}
 	}	
 }

@@ -1,10 +1,14 @@
 <?php
 $world = new World();
 
-$mouse = new Mouse($world, 3, 5, 5);
-$cat = new Cat ($world, 2, 7, 7);
+$mouse = new Mouse($world, 5, 5, 4, 1);
+$cat = new Cat ($world, 7, 7, 1, 2);
 
-$search = $mouse->searchTheAnimal($world, $cat);
-$mouse->move($world, $cat);
+for ($i = 0; $i < 10; $i++) {
+	$mouse->move($world, $cat);
+	$cat->move($world, $mouse);
 
-$world->printMap();
+	echo "Turn: " . $i . "\n";
+	$world->printMap();
+	echo "\n";
+}

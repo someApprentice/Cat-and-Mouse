@@ -1,6 +1,9 @@
 <?php
 class Mouse extends Animal {
-	public function move(World $world, Cat $cat) {
+	public $symbol = "M";
+
+
+	public function move(World $world, Cat $cat) { //Будет ли лучше сделать параметр $cat необязательным?  
 		$from['x'] = $this->x;
 		$from['y'] = $this->y;
 
@@ -8,18 +11,46 @@ class Mouse extends Animal {
 
 		$search = $this->searchTheAnimal($world, $cat);
 
-		foreach($search as $y => $x) {
+		$i = 0;
+
+		foreach ($search as $y => $x) {
+			if ($i > 0) {
+				break;
+			} 
+
 			foreach ($x as $key => $value) {
-				if (abs($y - ($from['y'] + 1)) > abs($y - ($from['y'] - 1))) {
-					$this->y += 1;
-				} else if (abs($y - ($from['y'] + 1)) < abs($y - ($from['y'] - 1))) {
-					$this->y -= 1;
-				} else if (abs($x - ($from['x'] + 1)) > abs($x - ($from['x'] - 1))) {
-					$this->x += 1;
-				} else if (abs($x - ($from['x'] + 1)) < abs($x - ($from['x'] - 1))) {
-					$this->x -=1;
+				//Очень не красивое условие. Возможно ли это исправить?
+				if ((abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed)))) {
+					$this->y += $this->speed;
+					$this->x += $this->speed;
+				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed)))) {
+					$this->y -= $this->speed;
+					$this->x -= $this->speed;
+				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed)))) {
+					$this->y -= $this->speed;
+					$this->x += $this->speed;
+				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed)))) {
+					$this->y += $this->speed;
+					$this->x -= $this->speed;
+				} else if (abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) {
+					$this->y += $this->speed;
+				} else if (abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) {
+					$this->y -= $this->speed;
+				} else if (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed))) {
+					$this->x += $this->speed;
+				} else if (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed))) {
+					$this->x -= $this->speed;
 				}
 			}
+
+			$i++;
+		}
+
+		if (empty($search)) {
+				$negative = $this->speed * (-1);
+
+				$this->x += mt_rand($negative, $this->speed);
+				$this->y += mt_rand($negative, $this->speed);
 		}
 
 		$to['x'] = $this->x;

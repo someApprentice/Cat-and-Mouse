@@ -4,10 +4,13 @@ class Animal {
 	protected $y;
 
 	protected $view;
+	protected $speed;
 
+	public $symbol;
 
-	public function __construct(World $world, $view = 1, $x = 0, $y = 0) {
+	public function __construct(World $world, $x = 0, $y = 0, $view = 1, $speed = 1) {
 		$this->view = $view;
+		$this->speed = $speed;
 
 		$this->x = $x;
 		$this->y = $y;
