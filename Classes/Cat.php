@@ -13,31 +13,31 @@ class Cat extends Animal {
 		$i = 0;
 
 		foreach ($search as $y => $x) {
-			if ($i < 0) {
+			if ($i >  0) {
 				break;
 			} 
 
 			foreach ($x as $key => $value) {
-				if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed)))) {
-					$this->y += $this->speed;
-					$this->x += $this->speed;
-				} else if ((abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed)))) {
+				if ((abs($y - ($from['y'] + $this->speed)) >  abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) >  abs($key - ($from['x'] - $this->speed)))) {
 					$this->y -= $this->speed;
 					$this->x -= $this->speed;
-				} else if ((abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed)))) {
-					$this->y -= $this->speed;
+				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed)))) {
+					$this->y += $this->speed;
 					$this->x += $this->speed;
-				} else if ((abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed)))) {
+				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) >  abs($key - ($from['x'] - $this->speed)))) {
 					$this->y += $this->speed;
 					$this->x -= $this->speed;
+				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) >  abs($key - ($from['x'] - $this->speed)))) {
+					$this->y -= $this->speed;
+					$this->x += $this->speed;
+				} else if (abs($y - ($from['y'] + $this->speed)) >  abs($y - ($from['y'] - $this->speed))) {
+					$this->y -= $this->speed;
 				} else if (abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) {
 					$this->y += $this->speed;
-				} else if (abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) {
-					$this->y -= $this->speed;
+				} else if (abs($key - ($from['x'] + $this->speed)) >  abs($key - ($from['x'] - $this->speed))) {
+					$this->x -= $this->speed;
 				} else if (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed))) {
 					$this->x += $this->speed;
-				} else if (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed))) {
-					$this->x -= $this->speed;
 				}
 			}
 

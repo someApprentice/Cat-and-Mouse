@@ -82,7 +82,7 @@ class World {
 				}
 			}
 
-			echo "\n";
+			echo "<br>";
 		}
 	}	
 }
