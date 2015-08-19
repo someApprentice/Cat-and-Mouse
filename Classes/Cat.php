@@ -18,6 +18,7 @@ class Cat extends Animal {
 			} 
 
 			foreach ($x as $key => $value) {
+				//Очень не красивое условие (находится наиболее близкая координата к первой попавшейся мышки из массива $search). Возможно ли это исправить?
 				if ((abs($y - ($from['y'] + $this->speed)) >  abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) >  abs($key - ($from['x'] - $this->speed)))) {
 					$this->y -= $this->speed;
 					$this->x -= $this->speed;
