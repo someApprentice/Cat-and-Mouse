@@ -57,10 +57,6 @@ class World {
 	}
 
 	public function moveAnimal(array $from, array $to) {
-		if (!isset($from['x']) and !isset($from['y']) and !isset($to['x']) and !isset($to['y'])) {
-			return false;
-		}
-
 		//$to = $this->delimitation($from, $to);
 
 		if (is_object($this->map[$to['x']][$to['y']])) {

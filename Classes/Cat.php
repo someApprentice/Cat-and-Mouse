@@ -96,6 +96,10 @@ class Cat extends Animal {
 
 		echo " to ({$this->x}, {$this->y}) {$see} <br>";
 
-		$this->world->moveAnimal($from, $to);
+		try {
+			$this->world->moveAnimal($from, $to);
+		} catch (Exception $e) {
+			die("Oops... {$e->getMessage()}");
+		}
 	}	
 }
