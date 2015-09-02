@@ -37,10 +37,6 @@ class World {
 	}
 
 	public function delimitation(array $from, array $to) {
-		if (!isset($from['x']) and !isset($from['y']) and !isset($to['x']) and !isset($to['y'])) {
-			return false;
-		}
-
 		if ($to['x'] > ($this->x -1)) {
 			$to['x'] = $this->x - 1;
 		} elseif($to['x'] < 0) {

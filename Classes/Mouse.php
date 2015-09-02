@@ -96,14 +96,18 @@ class Mouse extends Animal {
 			echo " 0 ";
 		}
 
-		$to = $this->world->delimitation($from, $to);
-
+		//Правильно ли я начал использовать исключение?
+		try {
+			$to = $this->world->delimitation($from, $to);
+		} catch (Exception $e) {
+			die("Oops... {$e->getMessage()}");
+		}
+		
 		$this->x = $to['x'];
 		$this->y = $to['y'];
 
 		echo " to ({$this->x}, {$this->y}) {$see} <br>";
 
-		//Правильно ли я начал использовать исключение?
 		try {
 			$this->world->moveAnimal($from, $to);
 		} catch (Exception $e) {
