@@ -1,7 +1,7 @@
 <?php
 class World {
-	private $m;
-	private $n;
+	private $x;
+	private $y;
 
 	protected $map = array();
 
@@ -9,21 +9,25 @@ class World {
 		$this->createMap();
 	}
 
-	private function createMap($m = 10, $n = 10) {
-		$this->m = $m;
-		$this->n = $n;
+	private function createMap($x = 10, $y = 10) {
+		$this->x = $x;
+		$this->y = $y;
 
-		$this->map = array_fill(0, $m, array_fill(0, $n, ''));
+		$this->map = array_fill(0, $x, array_fill(0, $y, ''));
 	}
 
 	public function getMap() {
 		return $this->map;
 	}
 
-	public function addAnimalToMap(Animal $animal) {
+	public function addAnimal(Animal $animal) {
 		$coordinate = $animal->getCoordinate();
 
-		$this->map[$coordinate['y']][$coordinate['x']] = $animal;
+		if (!is_object($this->map[$coordinate['y']][$coordinate['x']])) {
+			$this->map[$coordinate['y']][$coordinate['x']] = $animal;
+
+			$animal->realizingTheWorld($this);
+		}
 	}
 
 	public function removeAnimalFromMap(Animal $animal) {
@@ -32,51 +36,49 @@ class World {
 		$this->map[$coordinate['y']][$coordinate['x']] = '';
 	}
 
+	public function delimitation(array $from, array $to) {
+		if (!isset($from['x']) and !isset($from['y']) and !isset($to['x']) and !isset($to['y'])) {
+			return false;
+		}
+
+		if ($to['x'] > ($this->x -1)) {
+			$to['x'] = $this->x - 1;
+		} elseif($to['x'] < 0) {
+			$to['x'] = 0;
+		}
+
+		if ($to['y'] > ($this->y - 1)) {
+			$to['y'] = $this->y - 1;
+		} elseif ($to['y'] < 0) {
+			$to['y'] = 0;
+ 		}
+
+		return $to;
+	}
+
 	public function moveAnimal(array $from, array $to) {
 		if (!isset($from['x']) and !isset($from['y']) and !isset($to['x']) and !isset($to['y'])) {
 			return false;
 		}
 
-		//Неудачная попытка не дать объекту выйти за рамки карты
-		switch ($to['y']) { 
-			case ($to['y'] > $this->m):
-				$to['y'] = $to['y'] - ($to['y'] - $this->m);
-			break;
+		//$to = $this->delimitation($from, $to);
 
-			case ($to['y'] < 0):
-				$to['y'] = $to['y'] - ($to['y'] - $from['y']);
-			break;
-			
-			default:
-				$to['y'] = $to['y'];
-			break;
+		if (is_object($this->map[$to['x']][$to['y']])) {
+			$trappedAnimal = $this->map[$to['x']][$to['y']];
+
+			$trappedAnimal->KillAnimal();
 		}
 
+		$this->map[$to['x']][$to['y']] = $this->map[$from['x']][$from['y']];
 
-		switch ($to['x']) {
-			case ($to['x'] > $this->m):
-				$to['x'] = $to['x'] - ($to['x'] - $this->m);
-			break;
-
-			case ($to['x'] < 0):
-				$to['x'] = $to['x'] - ($to['x'] - $from['x']);
-			break;
-			
-			default:
-				$to['x'] = $to['x'];
-			break;
-		}
-
-		$this->map[$to['y']][$to['x']] = $this->map[$from['y']][$from['x']];
-
-		$this->map[$from['y']][$from['x']] = '';
+		$this->map[$from['x']][$from['y']] = '';
 	}
 
 	public function printMap() {
-		foreach ($this->map as $y => $x) {
-			foreach ($x as $value) {
+		foreach ($this->map as $x => $y) {
+			foreach ($y as $key => $value) {
 				if ($value == '') {
-					echo ' _ ';
+					echo $x . $key . " ";
 				} else {
 					echo ' '. $value->symbol . ' ';
 				}

@@ -6,16 +6,27 @@ class Animal {
 	protected $view;
 	protected $speed;
 
+	protected $fears = array();
+	protected $hunted = array();
+
+	protected $die;
+
 	public $symbol;
 
-	public function __construct(World $world, $x = 0, $y = 0, $view = 1, $speed = 1) {
+	protected $world;
+
+	public function __construct($x = 0, $y = 0, $view = 1, $speed = 1) {
 		$this->view = $view;
 		$this->speed = $speed;
 
 		$this->x = $x;
 		$this->y = $y;
 
-		$world->addAnimalToMap($this);
+		$this->die = false;
+	}
+
+	public function realizingTheWorld($world) {
+		$this->world = $world;
 	}
 
 	public function getCoordinate() {
@@ -25,35 +36,67 @@ class Animal {
 		return $coordinate;
 	}
 
-	public function overviewWorld(World $world) {
-		$map = $world->getMap();
+	public function overviewWorld() {
+		$map = $this->world->getMap();
 
 		$coordinate = $this->getCoordinate();
 
-		foreach($map as $y => $x) {
-			foreach($x as $key => $value) {
-				if ((($y > $coordinate['y'] - $this->view) and ($y <=  $coordinate['y'] + $this->view)) and ($key > $coordinate['y'] - $this->view) and ($key <=  $coordinate['y'] + $this->view)) {
-					$anothermap[$y][$key] = $value;
+		foreach($map as $x => $y) {
+			foreach($y as $key => $value) {
+				if ((($x >= $coordinate['x'] - $this->view) and ($x <=  $coordinate['x'] + $this->view)) and ($key >= $coordinate['y'] - $this->view) and ($key <=  $coordinate['y'] + $this->view)) {
+					$overview[$x][$key] = $value;
 				}
 			}
 		}
 
-		return $anothermap;
+		return $overview;
 	}
 
-	public function searchTheAnimal(World $world, Animal $animal) {
-		$overview = $this->overviewWorld($world);
+	public function searchScaryAnimals() {
+		$overview = $this->overviewWorld();
 
 		$search = array();
 
-		foreach($overview as $y => $x) {
-			foreach($x as $key => $value) {
-				if ($value == $animal) {
-					$search[$y][$key] = $animal;
+		foreach($overview as $x => $y) {
+			foreach($y as $key => $value) {
+
+				if (is_object($value)) {
+					foreach ($this->fears as $fear) {
+						if (get_class($value) == $fear) {
+							$search[$x][$key] = $value;
+						}
+					}	
 				}
+			
 			}
 		}
 
 		return $search;
+	}
+
+	public function searchTrackedAnimals() {
+		$overview = $this->overviewWorld();
+
+		$search = array();
+		
+		foreach($overview as $x => $y) {
+			foreach($y as $key => $value) {
+
+				if (is_object($value)) {
+					foreach ($this->hunted as $hunt) {
+						if (get_class($value) == $hunt) {
+							$search[$x][$key] = $value;
+						}
+					}	
+				}
+
+			}
+		}
+
+		return $search;
+	}
+
+	public function KillAnimal() {
+		$this->die = true;
 	}
 }
