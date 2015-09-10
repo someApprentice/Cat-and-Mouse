@@ -7,7 +7,6 @@ $cat = new Cat(7, 7, 3, 2);
 $world->addAnimal($mouse);
 $world->addAnimal($cat);
 
-
 echo "Turn: 0 <br>";
 $world->printMap();
 echo "<br>";

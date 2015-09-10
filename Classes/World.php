@@ -37,6 +37,12 @@ class World {
 	}
 
 	public function delimitation(array $from, array $to) {
+		if (!isset($from['x']) and !isset($from['y']) and !isset($to['x']) and !isset($to['y'])) {
+			throw new Exception("Missing x or y from to or from array");
+
+			return false; //Нужно ли это возвращать ложное значение?
+		}
+
 		if ($to['x'] > ($this->x -1)) {
 			$to['x'] = $this->x - 1;
 		} elseif($to['x'] < 0) {
@@ -53,6 +59,12 @@ class World {
 	}
 
 	public function moveAnimal(array $from, array $to) {
+		if (!isset($from['x']) and !isset($from['y']) and !isset($to['x']) and !isset($to['y'])) {
+			throw new Exception("Missing x or y from to or from array");
+		
+			return false;
+		}
+		
 		//$to = $this->delimitation($from, $to);
 
 		if (is_object($this->map[$to['x']][$to['y']])) {

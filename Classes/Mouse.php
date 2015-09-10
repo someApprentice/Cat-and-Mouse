@@ -11,8 +11,9 @@ class Mouse extends Animal {
 		$from['y'] = $this->y;
 
 		if ($this->die) {
+			//Почему-то здесь код крашиться, если использвовать throw new Exception(" - They Die ~((‡> <br>");
 			echo " - They Die ~((‡> <br>";
-
+				
 			return false;
 		}
 
@@ -96,22 +97,15 @@ class Mouse extends Animal {
 			echo " 0 ";
 		}
 
-		//Правильно ли я начал использовать исключение?
-		try {
-			$to = $this->world->delimitation($from, $to);
-		} catch (Exception $e) {
-			die("Oops... {$e->getMessage()}");
-		}
+		$to = $this->world->delimitation($from, $to);
+
 		
 		$this->x = $to['x'];
 		$this->y = $to['y'];
 
 		echo " to ({$this->x}, {$this->y}) {$see} <br>";
 
-		try {
-			$this->world->moveAnimal($from, $to);
-		} catch (Exception $e) {
-			die("Oops... {$e->getMessage()}");
-		}
+		$this->world->moveAnimal($from, $to);
+		
 	}
 }

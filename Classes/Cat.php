@@ -88,22 +88,14 @@ class Cat extends Animal {
 
 			echo " 0 ";
 		}
-
-		try {
-			$to = $this->world->delimitation($from, $to);
-		} catch (Exception $e) {
-			die("Oops... {$e->getMessage()}");
-		}
+	
+		$to = $this->world->delimitation($from, $to);
 
 		$this->x = $to['x'];
 		$this->y = $to['y'];
 
 		echo " to ({$this->x}, {$this->y}) {$see} <br>";
-
-		try {
-			$this->world->moveAnimal($from, $to);
-		} catch (Exception $e) {
-			die("Oops... {$e->getMessage()}");
-		}
+		
+		$this->world->moveAnimal($from, $to);
 	}	
 }
