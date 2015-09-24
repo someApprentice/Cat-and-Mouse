@@ -5,97 +5,42 @@ class Cat extends Animal {
 	protected $hunted = array("Mouse");
 
 	public function move() {
-		echo "Cat on ({$this->x}, {$this->y})";
 
-		$from['x'] = $this->x;
-		$from['y'] = $this->y;
+		$overview = $this->world->overviewWorld($this);
 
-		$to['x'] = '';
-		$to['y'] = '';
+		$track = $this->world->searchTrackedAnimals($this);
 
-		$overview = $this->overviewWorld();
+		for ($x = $this->getX() - $this->speed; $x <= $this->getX() + $this->speed; $x++) {
+			for ($y = $this->getY() - $this->speed; $y <= $this->y + $this->speed; $y++) {
+				$score = 0;
 
-		$search = $this->searchTrackedAnimals();
+				foreach ($scary as $object) {
+					$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
 
-		if (empty($search)) {
-			$see = 'No';
-		} else {
-			$see = 'Yes';
-		} 
-
-		$i = 0;
-
-		foreach ($search as $y => $x) {
-			if ($i > 1) {
-				break;
-
-				$search = '';
-			} 
-
-			foreach ($x as $key => $value) {
-				//Очень не красивое условие (находится наиболее близкая координата к первой попавшейся мышки из массива $search). Возможно ли это исправить?
-				if ((abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) >  abs($key - ($from['x'] - $this->speed)))) {
-					$to['y'] = $this->y - $this->speed;
-					$to['x'] = $this->x - $this->speed;
-
-					echo " 1 "; 
-				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed)))) {
-					$to['y'] = $this->y + $this->speed;
-					$to['x'] = $this->x + $this->speed;
-
-					echo " 2 "; 
-				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) >  abs($key - ($from['x'] - $this->speed)))) {
-					$to['y'] = $this->y + $this->speed;
-					$to['x'] = $this->x - $this->speed;
-
-					echo " 3 "; 
-				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) >  abs($key - ($from['x'] - $this->speed)))) {
-					$to['y'] = $this->y - $this->speed;
-					$to['x'] = $this->x + $this->speed;
-
-					echo " 4 "; 
-				} else if (abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) {
-					$to['y'] = $this->y - $this->speed;
-					$to['x'] = $this->x;
-
-					echo " 5 "; 
-				} else if (abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) {
-					$to['y'] = $this->y + $this->speed;
-					$to['x'] = $this->x;
-
-					echo " 6 "; 
-				} else if (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed))) {
-					$to['y'] = $this->y;
-					$to['x'] = $this->x - $this->speed;
-
-					echo " 7 "; 
-				} else if (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed))) {
-					$to['y'] = $this->y;
-					$to['x'] = $this->x + $this->speed;
-
-					echo " 8 "; 
+					$score += $distance;
 				}
+
+				$move[] = array(
+						'x' => $x,
+						'y' => $y,
+						'score' => $score
+					);
 			}
-
-			$i++;
 		}
 
-		if (empty($search)) {
-			$negative = $this->speed * (-1);
+		//Выбираем наименьшее значение $score
+		usort($move, function($a, $b) {
+			    if ($a['score'] == $b['score']) {
+			        return 0;
+			    }
+			    
+			    return ($a['score'] > $b['score']) ? -1 : 1;
+			}
+		);
 
-			$to['x'] = $this->x + mt_rand($negative, $this->speed);
-			$to['y'] = $this->y + mt_rand($negative, $this->speed);
+		$move = array_shift($move); 
 
-			echo " 0 ";
-		}
-	
-		$to = $this->world->delimitation($from, $to);
-
-		$this->x = $to['x'];
-		$this->y = $to['y'];
-
-		echo " to ({$this->x}, {$this->y}) {$see} <br>";
-		
-		$this->world->moveAnimal($from, $to);
+		$this->x = $move['x'];
+		$this->y = $move['y'];
 	}	
 }

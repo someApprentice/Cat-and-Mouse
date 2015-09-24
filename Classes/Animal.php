@@ -25,7 +25,7 @@ class Animal {
 		$this->die = false;
 	}
 
-	public function realizingTheWorld($world) {
+	public function returnWorldToTheAnimal($world) {
 		$this->world = $world;
 	}
 
@@ -36,65 +36,15 @@ class Animal {
 		return $coordinate;
 	}
 
-	public function overviewWorld() {
-		$map = $this->world->getMap();
-
-		$coordinate = $this->getCoordinate();
-
-		foreach($map as $x => $y) {
-			foreach($y as $key => $value) {
-				if ((($x >= $coordinate['x'] - $this->view) and ($x <=  $coordinate['x'] + $this->view)) and ($key >= $coordinate['y'] - $this->view) and ($key <=  $coordinate['y'] + $this->view)) {
-					$overview[$x][$key] = $value;
-				}
-			}
-		}
-
-		return $overview;
+	public function getX() {
+		return $this->x;
 	}
 
-	public function searchScaryAnimals() {
-		$overview = $this->overviewWorld();
-
-		$search = array();
-
-		foreach($overview as $x => $y) {
-			foreach($y as $key => $value) {
-
-				if (is_object($value)) {
-					foreach ($this->fears as $fear) {
-						if (get_class($value) == $fear) {
-							$search[$x][$key] = $value;
-						}
-					}	
-				}
-			
-			}
-		}
-
-		return $search;
+	public function getY() {
+		return $this->y;
 	}
 
-	public function searchTrackedAnimals() {
-		$overview = $this->overviewWorld();
-
-		$search = array();
-		
-		foreach($overview as $x => $y) {
-			foreach($y as $key => $value) {
-
-				if (is_object($value)) {
-					foreach ($this->hunted as $hunt) {
-						if (get_class($value) == $hunt) {
-							$search[$x][$key] = $value;
-						}
-					}	
-				}
-
-			}
-		}
-
-		return $search;
-	}
+	//getWorld() {return $this->world} нужно ли? 
 
 	public function KillAnimal() {
 		$this->die = true;

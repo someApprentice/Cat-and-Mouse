@@ -5,11 +5,6 @@ class Mouse extends Animal {
 	protected $fears = array("Cat");
 
 	public function move() {
-		echo "Mouse on ({$this->x}, {$this->y})";
-
-		$from['x'] = $this->x;
-		$from['y'] = $this->y;
-
 		if ($this->die) {
 			//Почему-то здесь код крашиться, если использвовать throw new Exception(" - They Die ~((‡> <br>");
 			echo " - They Die ~((‡> <br>";
@@ -17,95 +12,45 @@ class Mouse extends Animal {
 			return false;
 		}
 
-		$to['x'] = '';
-		$to['y'] = '';
+		$move = array();
 
-		$overview = $this->overviewWorld();
+		$overview = $this->world->overviewWorld($this); //Обращение через $this и последующая передача этого же самаого $this. Все ли с этим хорошо?
 
-		$search = $this->searchScaryAnimals();
+		$scary = $this->world->searchScaryAnimals($this);
 
-		if (empty($search)) {
-			$see = 'No';
-		} else {
-			$see = 'Yes';
-		} 
+		for ($x = $this->getX() - $this->speed; $x <= $this->getX() + $this->speed; $x++) {
+			for ($y = $this->getY() - $this->speed; $y <= $this->y + $this->speed; $y++) {
+				$score = 0;
 
-		$i = 0;
+				//Суммируем растояние от всех обозримых кошек и выдаем эту сумму за количество баллов (чем больше сумма тем больше расстояние от всех кошек сразу).
+				foreach ($scary as $object) {
+					$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
 
-		foreach ($search as $y => $x) {
-			if ($i > 1) {
-				break;
-
-				$search = '';
-			}
-
-			foreach ($x as $key => $value) {
-				//Очень не красивое условие (находится наиболее далекая координата от первой попавшейся кошки из массива $search). Возможно ли это исправить?
-				if ((abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed)))) {
-					$to['y'] = $this->y + $this->speed;
-					$to['x'] = $this->x + $this->speed;
-
-					echo " 1 ";
-				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed)))) {
-					$to['y'] = $this->y - $this->speed;
-					$to['x'] = $this->x - $this->speed;
-
-					echo " 2 ";
-				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed)))) {
-					$to['y'] = $this->y - $this->speed;
-					$to['x'] = $this->x + $this->speed;
-
-					echo " 3 ";
-				} else if ((abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) and (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed)))) {
-					$to['y'] = $this->y + $this->speed;
-					$to['x'] = $this->x - $this->speed;
-
-					echo " 4 ";
-				} else if (abs($y - ($from['y'] + $this->speed)) > abs($y - ($from['y'] - $this->speed))) {
-					$to['y'] = $this->y + $this->speed;
-					$to['x'] = $this->x;
-
-					echo " 5 ";
-				} else if (abs($y - ($from['y'] + $this->speed)) < abs($y - ($from['y'] - $this->speed))) {
-					$to['y'] = $this->y - $this->speed;
-					$to['x'] = $this->x;
-
-					echo " 6 ";
-				} else if (abs($key - ($from['x'] + $this->speed)) > abs($key - ($from['x'] - $this->speed))) {
-					$to['y'] = $this->y;
-					$to['x'] = $this->x + $this->speed;
-					
-
-					echo " 7 ";
-				} else if (abs($key - ($from['x'] + $this->speed)) < abs($key - ($from['x'] - $this->speed))) {
-					$to['y'] = $this->y;
-					$to['x'] = $this->x - $this->speed;
-
-					echo " 8 ";
+					$score += $distance;
 				}
+
+				$move[] = array(
+						'x' => $x,
+						'y' => $y,
+						'score' => $score
+					);
 			}
-
-			$i++;
 		}
 
-		if (empty($search)) {
-			$negative = $this->speed * (-1);
+		//Выбираем наибольшие значение $score
+		usort($move, function($a, $b) {
+			    if ($a['score'] == $b['score']) {
+			        return 0;
+			    }
+			    
+			    return ($a['score'] > $b['score']) ? -1 : 1;
+			}
+		);
 
-			$to['x'] = $this->x + mt_rand($negative, $this->speed);
-			$to['y'] = $this->y + mt_rand($negative, $this->speed);
+		$move = array_shift($move); //Ничего страшного если переопределить здесь эту переменную? Массив $move же больше не нужен. 
 
-			echo " 0 ";
-		}
-
-		$to = $this->world->delimitation($from, $to);
-
-		
-		$this->x = $to['x'];
-		$this->y = $to['y'];
-
-		echo " to ({$this->x}, {$this->y}) {$see} <br>";
-
-		$this->world->moveAnimal($from, $to);
-		
+		//И передвигаем мышку
+		$this->x = $move['x'];
+		$this->y = $move['y'];
 	}
 }

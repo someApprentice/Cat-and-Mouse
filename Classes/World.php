@@ -3,17 +3,14 @@ class World {
 	private $x;
 	private $y;
 
-	protected $map = array();
+	protected $map;
 
 	public function __construct() {
 		$this->createMap();
 	}
 
-	private function createMap($x = 10, $y = 10) {
-		$this->x = $x;
-		$this->y = $y;
-
-		$this->map = array_fill(0, $x, array_fill(0, $y, ''));
+	private function createMap() {
+		$this->map = new SplObjectStorage();
 	}
 
 	public function getMap() {
@@ -21,74 +18,81 @@ class World {
 	}
 
 	public function addAnimal(Animal $animal) {
-		$coordinate = $animal->getCoordinate();
+		$map = $this->getMap();
 
-		if (!is_object($this->map[$coordinate['y']][$coordinate['x']])) {
-			$this->map[$coordinate['y']][$coordinate['x']] = $animal;
+		foreach ($map as $object) {
+			if ($animal->getX() == $object->getX() and $animal->getY() == $object->getY()) {
+				throw new Exception("In this coordinate already have it object");
 
-			$animal->realizingTheWorld($this);
+				return false;
+			}
+
+			$this->map->attach($animal);
+
+			$animal->returnWorldToTheAnimal($this);
 		}
 	}
 
 	public function removeAnimalFromMap(Animal $animal) {
-		$coordinate = $animal->getCoordinate(); //копипаста
+		$this->map->detach($animal);
+	}
 
-		$this->map[$coordinate['y']][$coordinate['x']] = '';
+	//Я много думал что передавать в эту переменную и решил передать именно Животное от которого будет совершаться обзор, а не значения координат.
+	//Мне показалось так наглядней и удобней в плане написания кода. Поправь пожалуйста если не правильно.
+	public function overviewWorld(Animal $animal) {
+		$map = $this->getMap();
+
+		$overview = new SplObjectStorage();
+
+		foreach($map as $object) {
+			if ((($object->getX() >= $animal->getX() - $animal->view) and ($object->getX() <=  $animal->getX() + $animal->view)) and ($object->getY() >= $animal->getY() - $animal->view) and ($object->getY() <=  $animal->getY() + $animal->view)) {
+					$overview->attach($object);
+				}
+			}
+		}
+
+		return $overview;
+	}
+
+	public function searchScaryAnimals(Animal $animal) {
+		$overview = $this->overviewWorld($animal);
+
+		$search = new SplObjectStorage();
+
+		foreach($overview as $object) {
+			foreach ($animal->fears as $fear) {
+				if (get_class($object) == $fear) {
+					$search->attach($object);
+				}
+			}	
+		}
+
+		return $search;
+	}
+
+	public function searchTrackedAnimals(Animal $animal) {
+		$overview = $this->overviewWorld($animal);
+
+		$search = new SplObjectStorage();
+		
+		foreach($overview as $object) {
+			foreach ($animal->hunted as $hunt) {
+				if (get_class($object) == $hunt) {
+					$search->attach($object);
+				}
+			}	
+
+		}
+
+		return $search;
 	}
 
 	public function delimitation(array $from, array $to) {
-		if (!isset($from['x']) and !isset($from['y']) and !isset($to['x']) and !isset($to['y'])) {
-			throw new Exception("Missing x or y from to or from array");
-
-			return false; //Нужно ли это возвращать ложное значение?
-		}
-
-		if ($to['x'] > ($this->x -1)) {
-			$to['x'] = $this->x - 1;
-		} elseif($to['x'] < 0) {
-			$to['x'] = 0;
-		}
-
-		if ($to['y'] > ($this->y - 1)) {
-			$to['y'] = $this->y - 1;
-		} elseif ($to['y'] < 0) {
-			$to['y'] = 0;
- 		}
-
-		return $to;
 	}
 
 	public function moveAnimal(array $from, array $to) {
-		if (!isset($from['x']) and !isset($from['y']) and !isset($to['x']) and !isset($to['y'])) {
-			throw new Exception("Missing x or y from to or from array");
-		
-			return false;
-		}
-		
-		//$to = $this->delimitation($from, $to);
-
-		if (is_object($this->map[$to['x']][$to['y']])) {
-			$trappedAnimal = $this->map[$to['x']][$to['y']];
-
-			$trappedAnimal->KillAnimal();
-		}
-
-		$this->map[$to['x']][$to['y']] = $this->map[$from['x']][$from['y']];
-
-		$this->map[$from['x']][$from['y']] = '';
 	}
 
 	public function printMap() {
-		foreach ($this->map as $x => $y) {
-			foreach ($y as $key => $value) {
-				if ($value == '') {
-					echo $x . $key . " ";
-				} else {
-					echo ' '. $value->symbol . ' ';
-				}
-			}
-
-			echo "<br>";
-		}
 	}	
 }
