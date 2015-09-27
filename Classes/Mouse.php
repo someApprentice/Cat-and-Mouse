@@ -49,6 +49,8 @@ class Mouse extends Animal {
 
 		$move = array_shift($move); //Ничего страшного если переопределить здесь эту переменную? Массив $move же больше не нужен. 
 
+		$this->world->delimitation($move['x'], $move['y']);
+
 		//И передвигаем мышку
 		$this->x = $move['x'];
 		$this->y = $move['y'];

@@ -87,7 +87,10 @@ class World {
 		return $search;
 	}
 
-	public function delimitation(array $from, array $to) {
+	public function delimitation($x, $y) {
+		if ($x > $this->x or $x < 0 or $y > $this->y or $y < 0) {
+			throw new Exception("x or y are outside to the border of map");
+		}
 	}
 
 	public function moveAnimal(array $from, array $to) {

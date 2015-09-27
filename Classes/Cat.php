@@ -5,6 +5,7 @@ class Cat extends Animal {
 	protected $hunted = array("Mouse");
 
 	public function move() {
+		$move = array();
 
 		$overview = $this->world->overviewWorld($this);
 
@@ -39,6 +40,8 @@ class Cat extends Animal {
 		);
 
 		$move = array_shift($move); 
+
+		$this->world->delimitation($move['x'], $move['y']);
 
 		$this->x = $move['x'];
 		$this->y = $move['y'];
