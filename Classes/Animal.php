@@ -1,5 +1,5 @@
 <?php
-class Animal {
+abstract class Animal {
 	protected $x;
 	protected $y;
 
@@ -7,7 +7,7 @@ class Animal {
 	protected $speed;
 
 	protected $fears = array();
-	protected $hunted = array();
+	protected $tracks = array();
 
 	protected $die;
 
@@ -29,11 +29,12 @@ class Animal {
 		$this->world = $world;
 	}
 
-	public function getCoordinate() {
-		$coordinate['x'] = $this->x;
-		$coordinate['y'] = $this->y;
+	public function deleteWorldFromTheAnimal() {
+		$this->world = false; //Так правильно?
+	}
 
-		return $coordinate;
+	public function getCoordinate() {
+		return ['x' => $this->x, 'y' => $this->y];
 	}
 
 	public function getX() {
@@ -44,7 +45,81 @@ class Animal {
 		return $this->y;
 	}
 
-	//getWorld() {return $this->world} нужно ли? 
+	public function getView() {
+		return $this->view;
+	}
+
+	public function getSpeed() {
+		return $this->speed;
+	}
+
+	public function getFears() {
+		return $this->fears();
+	}
+
+	public function getTracks() {
+		return $this->tracks;
+	}
+
+	public function isItDie() {
+		return $this->die;
+	}
+
+	public function getSymbol() {
+		return $this->symbol;
+	}
+
+	public function getWorld() {
+		return $this->world
+	}  
+
+
+	public function searchAnimalsAroundByType(Animal $animal, array $types) {
+		$overview = $this->getWorld->overviewWorld($animal);
+
+		$search = new SplObjectStorage();
+
+		foreach($overview as $object) {
+			foreach ($types as $type) {
+				if (get_class($object) == $type) {
+					$search->attach($object);
+				}
+			}	
+		}
+
+		return $search;
+	}
+
+	public function rateMoves($search) {
+		$move = array();
+
+		for ($x = $this->getX() - $this->speed; $x <= $this->getX() + $this->speed; $x++) {
+			for ($y = $this->getY() - $this->speed; $y <= $this->y + $this->speed; $y++) {
+				if ($this->getWorld->validateCoordinates($x, $y) or $this->getWorld->determineTheObject($x, $y)) {
+					continue;
+				}
+
+				$score = 0;
+
+				//Суммируем растояние от всех обозримых кошек и выдаем эту сумму за количество баллов (чем больше сумма тем больше расстояние от всех кошек сразу).
+				foreach ($search as $object) {
+					$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
+
+					$score += $distance;
+				}
+
+				$move[] = array(
+						'x' => $x,
+						'y' => $y,
+						'score' => $score
+					);
+			}
+		}
+
+		return $move;
+	}
+
+
 
 	public function KillAnimal() {
 		$this->die = true;

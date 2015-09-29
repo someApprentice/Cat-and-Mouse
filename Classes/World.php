@@ -1,19 +1,22 @@
 <?php
 class World {
-	private $x;
-	private $y;
+	private $width;
+	private $height;
 
 	protected $map;
 
-	public function __construct() {
-		$this->createMap();
+	public function __construct($width = 10, $height = 10) {
+		$this->createMap($width, height);
 	}
 
-	private function createMap() {
+	private function createMap($width, $height) {
+		$this->width = $width;
+		$this->height = $height;
+
 		$this->map = new SplObjectStorage();
 	}
 
-	public function getMap() {
+	public function getAllAnimals() {
 		return $this->map;
 	}
 
@@ -21,31 +24,27 @@ class World {
 		$map = $this->getMap();
 
 		foreach ($map as $object) {
-			if ($animal->getX() == $object->getX() and $animal->getY() == $object->getY()) {
-				throw new Exception("In this coordinate already have it object");
-
-				return false;
+			if ($this->determineTheObject($animal->getX(), $animal->getY())) {
+				throw new Exception("In this coordinate ({$animal->getX()}, {$animal->getY()}) already have it object - {get_class($animal)}");
 			}
-
-			$this->map->attach($animal);
-
-			$animal->returnWorldToTheAnimal($this);
 		}
+
+		$this->map->attach($animal);
+
+		$animal->returnWorldToTheAnimal($this);
 	}
 
 	public function removeAnimalFromMap(Animal $animal) {
 		$this->map->detach($animal);
 	}
 
-	//Я много думал что передавать в эту переменную и решил передать именно Животное от которого будет совершаться обзор, а не значения координат.
-	//Мне показалось так наглядней и удобней в плане написания кода. Поправь пожалуйста если не правильно.
 	public function overviewWorld(Animal $animal) {
 		$map = $this->getMap();
 
 		$overview = new SplObjectStorage();
 
 		foreach($map as $object) {
-			if ((($object->getX() >= $animal->getX() - $animal->view) and ($object->getX() <=  $animal->getX() + $animal->view)) and ($object->getY() >= $animal->getY() - $animal->view) and ($object->getY() <=  $animal->getY() + $animal->view)) {
+			if ($this->calculateDistance($animal, $object) < $animal->view) {
 					$overview->attach($object);
 				}
 			}
@@ -54,46 +53,32 @@ class World {
 		return $overview;
 	}
 
-	public function searchScaryAnimals(Animal $animal) {
-		$overview = $this->overviewWorld($animal);
 
-		$search = new SplObjectStorage();
-
-		foreach($overview as $object) {
-			foreach ($animal->fears as $fear) {
-				if (get_class($object) == $fear) {
-					$search->attach($object);
-				}
-			}	
-		}
-
-		return $search;
-	}
-
-	public function searchTrackedAnimals(Animal $animal) {
-		$overview = $this->overviewWorld($animal);
-
-		$search = new SplObjectStorage();
-		
-		foreach($overview as $object) {
-			foreach ($animal->hunted as $hunt) {
-				if (get_class($object) == $hunt) {
-					$search->attach($object);
-				}
-			}	
-
-		}
-
-		return $search;
-	}
-
-	public function delimitation($x, $y) {
+	public function validateCoordinates($x, $y) {
 		if ($x > $this->x or $x < 0 or $y > $this->y or $y < 0) {
 			throw new Exception("x or y are outside to the border of map");
+
+			return true;
 		}
+
+		return false;
 	}
 
-	public function moveAnimal(array $from, array $to) {
+	public function determineTheObject($x, $y) {
+		foreach ($map as $object) {
+			if ($x == $object->getX() and $y == $object->getY()) {
+				return true;
+			}
+		}
+
+		return false;
+	} 
+
+	public function calculateDistance($firstObject, $secondObject) {
+			$distance = abs(sqrt((($firstObject->getX() - $secondObject->getX())**2) + (($firstObject->getY() - $secondObject->getY())**2)));
+		}
+
+		return $distance;
 	}
 
 	public function printMap() {
