@@ -25,17 +25,19 @@ class Mouse extends Animal {
 			echo " - They Die ~((‡> <br>";
 		}
 
-		$overview = $this->world->overviewWorld($this);
+		//$overview = $this->world->overviewWorld($this);
 
-		$scary = $this->world->searchAnimalsAroundByType($this, $this->getTracks());
+		$scary = $this->searchAnimalsAroundByType($this, $this->getFears());
 
 		$move = $this->rateMoves($scary);
 
 		$move = $this->chooseTheMovement($move);
 
-		$this->world->delimitation($move['x'], $move['y']);
+		$this->world->validateCoordinates($move['x'], $move['y']);
 		
 		$this->x = $move['x'];
 		$this->y = $move['y'];
+
+		echo "Mouse move to ({$move['x']}, {$move['y']}). <br>";
 	}
 }

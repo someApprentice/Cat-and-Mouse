@@ -8,6 +8,7 @@ require_once 'game.php';
 <html>
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <link rel="stylesheet" href="css/style.css">
    </head>
    <body>
    		

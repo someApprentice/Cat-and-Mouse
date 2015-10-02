@@ -10,7 +10,7 @@ class Cat extends Animal {
 			        return 0;
 			    }
 			    
-			    return ($a['score'] > $b['score']) ? -1 : 1;
+			    return ($a['score'] < $b['score']) ? -1 : 1;
 			}
 		);
 
@@ -20,17 +20,21 @@ class Cat extends Animal {
 	}
 
 	public function move() {
-		$overview = $this->world->overviewWorld($this);
+		//$overview = $this->world->overviewWorld($this);
 
-		$track = $this->world->searchAnimalsAroundByType($this, $this->getTracks());
+		$track = $this->searchAnimalsAroundByType($this, $this->getTracks());
+
+		
 
 		$move = $this->rateMoves($track);
 
 		$move = $this->chooseTheMovement($move);
 
-		$this->world->delimitation($move['x'], $move['y']);
+		$this->world->validateCoordinates($move['x'], $move['y']);
 
 		$this->x = $move['x'];
 		$this->y = $move['y'];
+
+		echo "Cat move to ({$move['x']}, {$move['y']}). <br>";
 	}	
 }

@@ -54,7 +54,7 @@ abstract class Animal {
 	}
 
 	public function getFears() {
-		return $this->fears();
+		return $this->fears;
 	}
 
 	public function getTracks() {
@@ -70,17 +70,18 @@ abstract class Animal {
 	}
 
 	public function getWorld() {
-		return $this->world
+		return $this->world;
 	}  
 
 
 	public function searchAnimalsAroundByType(Animal $animal, array $types) {
-		$overview = $this->getWorld->overviewWorld($animal);
+		$overview = $this->getWorld()->overviewWorld($animal);
 
 		$search = new SplObjectStorage();
 
 		foreach($overview as $object) {
 			foreach ($types as $type) {
+
 				if (get_class($object) == $type) {
 					$search->attach($object);
 				}
@@ -93,9 +94,9 @@ abstract class Animal {
 	public function rateMoves($search) {
 		$move = array();
 
-		for ($x = $this->getX() - $this->speed; $x <= $this->getX() + $this->speed; $x++) {
-			for ($y = $this->getY() - $this->speed; $y <= $this->y + $this->speed; $y++) {
-				if ($this->getWorld->validateCoordinates($x, $y) or $this->getWorld->determineTheObject($x, $y)) {
+		for ($x = $this->getX() - $this->getSpeed(); $x <= $this->getX() + $this->getSpeed(); $x++) {
+			for ($y = $this->getY() - $this->getSpeed(); $y <= $this->y + $this->getSpeed(); $y++) {
+				if ($this->getWorld()->validateCoordinates($x, $y) or $this->getWorld()->determineTheObject($x, $y)) {
 					continue;
 				}
 

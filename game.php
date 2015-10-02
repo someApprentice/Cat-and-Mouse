@@ -11,11 +11,15 @@ echo "Turn: 0 <br>";
 $world->printMap();
 echo "<br>";
 
+
 for ($i = 1; $i < 10; $i++) {
 	echo "Turn: " . $i . "<br>";
 
-	$mouse->move();
+	echo "Cat on ({$cat->getX()}, {$cat->getY()}). ";
 	$cat->move();
+
+	echo "Mouse on ({$mouse->getX()}, {$mouse->getY()}). ";
+	$mouse->move();
 
 	$world->printMap();
 	echo "<br>";
