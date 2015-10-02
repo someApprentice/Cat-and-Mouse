@@ -120,7 +120,9 @@ abstract class Animal {
 		return $move;
 	}
 
+	abstract function chooseTheMovement() {}
 
+	abstract function move() {}
 
 	public function KillAnimal() {
 		$this->die = true;
