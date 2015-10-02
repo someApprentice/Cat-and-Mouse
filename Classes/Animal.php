@@ -120,7 +120,7 @@ abstract class Animal {
 		return $move;
 	}
 
-	abstract public function chooseTheMovement();
+	abstract public function chooseTheMovement($move);
 
 	abstract public function move();
 
