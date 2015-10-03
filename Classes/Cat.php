@@ -35,6 +35,6 @@ class Cat extends Animal {
 		$this->x = $move['x'];
 		$this->y = $move['y'];
 
-		echo "Cat move to ({$move['x']}, {$move['y']}). <br>";
+		return $move;
 	}	
 }

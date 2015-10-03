@@ -16,6 +16,14 @@ class World {
 		$this->map = new SplObjectStorage();
 	}
 
+	public function getWidth() {
+		return $this->width;
+	}
+
+	public function getHeight() {
+		return $this->height;
+	}
+
 	public function getAllAnimals() {
 		return $this->map;
 	}
@@ -95,8 +103,6 @@ class World {
 							foreach ($this->getAllAnimals() as $object) {
 								if ($object->getX() == $x and $object->getY() == $y) {
 									echo $object->getSymbol();
-								} else {
-									echo "-";
 								}
 							}
 						echo "</td>";

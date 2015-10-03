@@ -38,6 +38,6 @@ class Mouse extends Animal {
 		$this->x = $move['x'];
 		$this->y = $move['y'];
 
-		echo "Mouse move to ({$move['x']}, {$move['y']}). <br>";
+		return $move;
 	}
 }
