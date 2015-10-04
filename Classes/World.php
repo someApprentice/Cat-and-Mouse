@@ -44,6 +44,8 @@ class World {
 
 	public function removeAnimalFromMap(Animal $animal) {
 		$this->map->detach($animal);
+
+		$animal->deleteWorldFromTheAnimal();
 	}
 
 	public function overviewWorld(Animal $animal) {
