@@ -93,6 +93,16 @@ class World {
 		return $distance;
 	}
 
+	public function moveAllAnimals() {
+		$animals = $this->getAllAnimals();
+
+		foreach ($animals as $animal) {
+			if (!$animal->isItDie()) {
+				$animal->move();
+			}		
+		}
+	}
+
 	public function printMap() {
 		echo "<table>";
 

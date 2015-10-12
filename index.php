@@ -17,9 +17,10 @@ require_once 'game.php';
 
       <?php for ($i = 1; $i <= 10; $i++): ?>
          Turn: <?=$i?> <br>
-
-         <?php $cat->move(); ?>
-         <?php $mouse->move(); ?>
+         
+         <?php 
+            $world->moveAllAnimals();
+         ?>
 
          <?php require '/Templates/print.phtml'; ?>
 
