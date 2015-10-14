@@ -4,20 +4,61 @@ class Mouse extends Animal {
 
 	protected $fears = array("Cat");
 
-	public function chooseTheMovement($move) {
-				usort($move, function($a, $b) {
-			    if ($a['score'] == $b['score']) {
-			        return 0;
-			    }
-			    
-			    return ($a['score'] > $b['score']) ? -1 : 1;
+	public function getAllMoves() {
+		$moves = array();
+
+		$fromX = $this->getX() - $this->getSpeed();
+		$toX = $this->getX() + $this->getSpeed();
+
+		$fromY = $this->getY() - $this->getSpeed();
+		$toY = $this->y + $this->getSpeed();
+
+		for ($x = $fromX; $x <= $toX; $x++) {
+			for ($y = fromY; $y <= $toY; $y++) {
+				if ($this->getWorld()->isInsideMap($x, $y) or $this->getWorld()->determineTheObject($x, $y)) {
+					continue;
+				}
+
+				if (($x > $this->getX() and $y > $this->getY()) or ($x > $this->getX() and $y < $this->getY()) or ($x < $this->getX() and $y > $this->getY()) or ($x < $this->getX() and $y < $this->getY())) {
+					continue;
+				}
+
+				$moves[] = array(
+					'x' => $x,
+					'y' => $y
+				);
 			}
-		);
+		}
 
-		$move = array_shift($move);
-
-		return $move;
+		return $moves;
 	}
+
+	public function rateMoves($moves, $search) {
+		$ratedMoves = array();
+
+		foreach ($moves as $move) {
+			$x = $move['x'];
+			$y = $move['y'];
+
+			$score = 0;
+
+			foreach ($search as $object) {
+				$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
+
+				$score += $distance;
+			}
+
+			$ratedMoves[] = array(
+				'x' => $x,
+				'y' => $y,
+				'score' => $score
+			);
+		}
+
+
+		return $ratedMoves;
+	}
+
 
 	public function move() {
 		if ($this->isItDie()) {
@@ -27,13 +68,15 @@ class Mouse extends Animal {
 
 		//$overview = $this->world->overviewWorld($this);
 
+		$moves = $this->getAllMoves();
+
 		$scary = $this->searchAnimalsAroundByType($this, $this->getFears());
 
-		$move = $this->rateMoves($scary);
+		$ratedMoves = $this->rateMoves($moves, $scary);
 
-		$move = $this->chooseTheMovement($move);
+		$move = $this->chooseTheMovement($ratedMoves);
 
-		$this->world->validateCoordinates($move['x'], $move['y']);
+		$this->world->isInsideMap($move['x'], $move['y']);
 		
 		$this->x = $move['x'];
 		$this->y = $move['y'];

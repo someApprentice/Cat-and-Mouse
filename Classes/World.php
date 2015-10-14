@@ -67,7 +67,7 @@ class World {
 	}
 
 
-	public function validateCoordinates($x, $y) {
+	public function isInsideMap($x, $y) {
 		if ($x > $this->width or $x < 0 or $y > $this->height or $y < 0) {
 			//throw new Exception("x or y are outside to the border of map");
 

@@ -6,9 +6,6 @@ abstract class Animal {
 	protected $view;
 	protected $speed;
 
-	protected $fears = array();
-	protected $tracks = array();
-
 	protected $die;
 
 	public $symbol;
@@ -73,7 +70,6 @@ abstract class Animal {
 		return $this->world;
 	}  
 
-
 	public function searchAnimalsAroundByType(Animal $animal, array $types) {
 		$overview = $this->getWorld()->overviewWorld($animal);
 
@@ -91,36 +87,25 @@ abstract class Animal {
 		return $search;
 	}
 
-	public function rateMoves($search) {
-		$move = array();
+	abstract function getAllMoves();
 
-		for ($x = $this->getX() - $this->getSpeed(); $x <= $this->getX() + $this->getSpeed(); $x++) {
-			for ($y = $this->getY() - $this->getSpeed(); $y <= $this->y + $this->getSpeed(); $y++) {
-				if ($this->getWorld()->validateCoordinates($x, $y) or $this->getWorld()->determineTheObject($x, $y)) {
-					continue;
-				}
+	abstract function rateMoves($moves, $search);
 
-				$score = 0;
-
-				//Суммируем растояние от всех обозримых кошек и выдаем эту сумму за количество баллов (чем больше сумма тем больше расстояние от всех кошек сразу).
-				foreach ($search as $object) {
-					$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
-
-					$score += $distance;
-				}
-
-				$move[] = array(
-						'x' => $x,
-						'y' => $y,
-						'score' => $score
-					);
+	public function chooseTheMovement($ratedMoves) {
+		usort($ratedMoves, function($a, $b) {
+		    if ($a['score'] == $b['score']) {
+			        return 0;
+			    }
+			    
+			    return ($a['score'] > $b['score']) ? -1 : 1;
 			}
-		}
+		);
 
-		return $move;
+		$ratedMoves = array_shift($ratedMoves);
+
+		return $ratedMoves;
+	
 	}
-
-	abstract public function chooseTheMovement($move);
 
 	abstract public function move();
 
