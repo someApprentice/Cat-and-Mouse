@@ -11,10 +11,10 @@ class Mouse extends Animal {
 		$toX = $this->getX() + $this->getSpeed();
 
 		$fromY = $this->getY() - $this->getSpeed();
-		$toY = $this->y + $this->getSpeed();
+		$toY = $this->getY() + $this->getSpeed();
 
 		for ($x = $fromX; $x <= $toX; $x++) {
-			for ($y = fromY; $y <= $toY; $y++) {
+			for ($y = $fromY; $y <= $toY; $y++) {
 				if ($this->getWorld()->isInsideMap($x, $y) or $this->getWorld()->determineTheObject($x, $y)) {
 					continue;
 				}
@@ -33,6 +33,18 @@ class Mouse extends Animal {
 		return $moves;
 	}
 
+	public function rateMove($x, $y, $search) {
+		$rate = 0;
+
+		foreach ($search as $object) {
+			$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
+
+			$rate += $distance;
+		}
+
+		return $rate;
+	}
+
 	public function rateMoves($moves, $search) {
 		$ratedMoves = array();
 
@@ -40,18 +52,12 @@ class Mouse extends Animal {
 			$x = $move['x'];
 			$y = $move['y'];
 
-			$score = 0;
-
-			foreach ($search as $object) {
-				$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
-
-				$score += $distance;
-			}
+			$rate = $this->rateMove($move['x'], $move['y'], $search);
 
 			$ratedMoves[] = array(
 				'x' => $x,
 				'y' => $y,
-				'score' => $score
+				'score' => $rate
 			);
 		}
 

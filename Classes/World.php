@@ -25,7 +25,9 @@ class World {
 	}
 
 	public function getAllAnimals() {
-		return $this->map;
+		$clone = clone $this->map;
+
+		return $clone;
 	}
 
 	public function addAnimal(Animal $animal) {
@@ -96,7 +98,7 @@ class World {
 	public function moveAllAnimals() {
 		$animals = $this->getAllAnimals();
 
-		foreach ($animals as $animal) {
+		foreach ($animals as $animal) {		
 			if (!$animal->isItDie()) {
 				$animal->move();
 			}		

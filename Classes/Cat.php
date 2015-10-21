@@ -7,8 +7,14 @@ class Cat extends Animal {
 	public function getAllMoves() {
 		$moves = array();
 
-		for ($x = $this->getX() - $this->getSpeed(); $x <= $this->getX() + $this->getSpeed(); $x++) {
-			for ($y = $this->getY() - $this->getSpeed(); $y <= $this->y + $this->getSpeed(); $y++) {
+		$fromX = $this->getX() - $this->getSpeed();
+		$toX = $this->getX() + $this->getSpeed();
+
+		$fromY = $this->getY() - $this->getSpeed();
+		$toY = $this->getY() + $this->getSpeed();
+
+		for ($x = $fromX; $x <= $toX; $x++) {
+			for ($y = $fromY; $y <= $toY; $y++) {
 				if ($this->getWorld()->isInsideMap($x, $y) or $this->getWorld()->determineTheObject($x, $y)) {
 					continue;
 				}
@@ -23,6 +29,20 @@ class Cat extends Animal {
 		return $moves;
 	}
 
+	public function rateMove($x, $y, $search) {
+		$rate = 0;
+		
+		foreach ($search as $object) {
+			$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
+
+			$rate += $distance;
+
+			$rate = 1 / $rate;
+		}
+
+		return $rate;		
+	}
+
 	public function rateMoves($moves, $search) {
 		$ratedMoves = array();
 
@@ -30,24 +50,14 @@ class Cat extends Animal {
 			$x = $move['x'];
 			$y = $move['y'];
 
-			$score = 0;
-
-			//Допилить эту функцию чтобы у хода к ближайщей мышке было болшее балов. Как?
-			foreach ($search as $object) {
-				$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
-
-				$score += $distance;
-
-				$score = 1 / $score;
-			}
+			$rate = $this->rateMove($move['x'], $move['y'], $search);
 
 			$ratedMoves[] = array(
 				'x' => $x,
 				'y' => $y,
-				'score' => $score
+				'score' => $rate
 			);
 		}
-
 
 		return $ratedMoves;
 	}

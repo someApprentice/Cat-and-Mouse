@@ -26,6 +26,6 @@ require_once 'game.php';
 
          <br>
       <?php endfor; ?>
-      
+            
    </body>
 </html>
