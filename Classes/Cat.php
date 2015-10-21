@@ -4,6 +4,10 @@ class Cat extends Animal {
 
 	protected $tracks = array("Mouse");
 
+	public function getSymbol() {
+		return $this->symbol;
+	}
+
 	public function getAllMoves() {
 		$moves = array();
 

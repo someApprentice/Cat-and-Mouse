@@ -62,9 +62,7 @@ abstract class Animal {
 		return $this->die;
 	}
 
-	public function getSymbol() {
-		return $this->symbol;
-	}
+	abstract function getSymbol();
 
 	public function getWorld() {
 		return $this->world;

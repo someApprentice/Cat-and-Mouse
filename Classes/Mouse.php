@@ -4,6 +4,10 @@ class Mouse extends Animal {
 
 	protected $fears = array("Cat");
 
+	public function getSymbol() {
+		return $this->symbol;
+	}
+
 	public function getAllMoves() {
 		$moves = array();
 
