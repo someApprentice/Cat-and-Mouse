@@ -60,7 +60,7 @@ class World {
 				continue;
 			}
 
-			if ($this->calculateDistance($animal, $object) < $animal->getView()) {
+			if ($this->calculateDistance($animal, $object) <= $animal->getView()) {
 				$overview->attach($object);	
 			}
 		}
@@ -71,7 +71,7 @@ class World {
 
 	public function isInsideMap($x, $y) {
 		if ($x > $this->width or $x < 0 or $y > $this->height or $y < 0) {
-			//throw new Exception("x or y are outside to the border of map");
+			//throw new Exception("x or y are outside of the border map");
 
 			return true;
 		}
@@ -90,7 +90,7 @@ class World {
 	} 
 
 	public function calculateDistance($firstObject, $secondObject) {
-		$distance = abs(sqrt((($firstObject->getX() - $secondObject->getX())**2) + (($firstObject->getY() - $secondObject->getY())**2)));
+		$distance = max(abs($firstObject->getX() - $secondObject->getX()), abs($firstObject->getY() - $secondObject->getY()));
 
 		return $distance;
 	}
@@ -104,27 +104,4 @@ class World {
 			}		
 		}
 	}
-
-	public function printMap() {
-		echo "<table>";
-
-			for ($y = $this->height; $y >= 0; $y--) {
-				echo "<tr>";
-					echo "<td>{$y}</td>";
-
-					for ($x = 0; $x <= $this->width; $x++) {
-						echo "<td>";
-							foreach ($this->getAllAnimals() as $object) {
-								if ($object->getX() == $x and $object->getY() == $y) {
-									echo $object->getSymbol();
-								}
-							}
-						echo "</td>";
-					} 
-
-				echo "</tr>";
-			}
-
-		echo "</table>";
-	}	
 }

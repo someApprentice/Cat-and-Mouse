@@ -8,8 +8,6 @@ abstract class Animal {
 
 	protected $die;
 
-	public $symbol;
-
 	protected $world;
 
 	public function __construct($x = 0, $y = 0, $view = 1, $speed = 1) {
@@ -62,6 +60,8 @@ abstract class Animal {
 		return $this->die;
 	}
 
+	//You must return the symbol of the animal. 
+	//return "🐒";
 	abstract function getSymbol();
 
 	public function getWorld() {
@@ -85,7 +85,66 @@ abstract class Animal {
 		return $search;
 	}
 
-	abstract function getAllMoves();
+	public function foundTheNearestAnimal($search) {
+		$animals = array();
+
+		foreach ($search as $object) {
+			$distance = $this->getWorld()->calculateDistance($this, $object);
+
+			$animals[] = array('object' => $object, 'distance' => $distance); 
+		}
+
+		usort($animals, function($a, $b) {
+		    if ($a['distance'] == $b['distance']) {
+			        return 0;
+			    }
+			    
+			    return ($a['distance'] < $b['distance']) ? -1 : 1;
+			}
+		);	
+
+		$nearestAnimal = array_shift($animals);
+
+		return $nearestAnimal['object'];	
+	}
+
+	abstract function getAllMoves($x, $y);
+
+	public function isItNotOneOfTrack($x, $y, $tracks) {
+		$object = $this->getWorld()->determineTheObject($x, $y);
+
+		if ($object) {
+			foreach ($tracks as $track) {
+				if (get_class($object) == $track) {
+					return false;
+				}
+			}
+		}
+
+		return $object;
+	}
+
+	public function isItCorner($x, $y) {
+		$maxCountOfMoves = (($this->getSpeed() * 2) + 1)**2;
+
+		$countMovesFromThisCoordinate = count($this->getAllMoves($x, $y));
+
+		if ($countMovesFromThisCoordinate > ($maxCountOfMoves / 2)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public function howManyMovesWillDoAnimal(Animal $animal, $distance) {
+		if ($distance == 0) {
+			return $distance;
+		}
+
+		$movesCount = ceil($distance / $animal->getSpeed());
+
+		return $movesCount;
+	}
 
 	abstract function rateMoves($moves, $search);
 
@@ -107,7 +166,11 @@ abstract class Animal {
 
 	abstract public function move();
 
-	public function KillAnimal() {
+	public function KillTheAnimal() {
 		$this->die = true;
+
+		$this->getWorld()->removeAnimalFromMap($this);
+
+		return true;
 	}
 }

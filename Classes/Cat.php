@@ -1,31 +1,30 @@
 <?php
 class Cat extends Animal {
-	public $symbol = "🐈";
 
 	protected $tracks = array("Mouse");
 
 	public function getSymbol() {
-		return $this->symbol;
+		return "🐈";
 	}
 
-	public function getAllMoves() {
+	public function getAllMoves($x, $y) {
 		$moves = array();
 
-		$fromX = $this->getX() - $this->getSpeed();
-		$toX = $this->getX() + $this->getSpeed();
+		$fromX = $x - $this->getSpeed();
+		$toX = $x + $this->getSpeed();
 
-		$fromY = $this->getY() - $this->getSpeed();
-		$toY = $this->getY() + $this->getSpeed();
+		$fromY = $y - $this->getSpeed();
+		$toY = $y + $this->getSpeed();
 
-		for ($x = $fromX; $x <= $toX; $x++) {
-			for ($y = $fromY; $y <= $toY; $y++) {
-				if ($this->getWorld()->isInsideMap($x, $y) or $this->getWorld()->determineTheObject($x, $y)) {
+		for ($forX = $fromX; $forX <= $toX; $forX++) {
+			for ($forY = $fromY; $forY <= $toY; $forY++) {
+				if ($this->getWorld()->isInsideMap($forX, $forY) or $this->isItNotOneOfTrack($forX, $forY, $this->getTracks())) {
 					continue;
 				}
 
 				$moves[] = array(
-					'x' => $x,
-					'y' => $y
+					'x' => $forX,
+					'y' => $forY
 				);
 			}
 		}
@@ -37,11 +36,17 @@ class Cat extends Animal {
 		$rate = 0;
 		
 		foreach ($search as $object) {
-			$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
+			$distance = max(abs($x - $object->getX()), abs($y - $object->getY()));
 
-			$rate += $distance;
+			$movesCount = $this->howManyMovesWillDoAnimal($this, $distance);
 
-			$rate = 1 / $rate;
+			$rate += $movesCount;
+
+			if ($rate == 0) {
+				$rate = 99999;
+			} else {
+				$rate = 1 / $rate;
+			}
 		}
 
 		return $rate;		
@@ -68,7 +73,7 @@ class Cat extends Animal {
 
 	public function move() {
 		//$overview = $this->world->overviewWorld($this);
-		$moves = $this->getAllMoves();
+		$moves = $this->getAllMoves($this->getX(), $this->getY());
 
 		$track = $this->searchAnimalsAroundByType($this, $this->getTracks());
 
@@ -77,6 +82,12 @@ class Cat extends Animal {
 		$move = $this->chooseTheMovement($ratedMoves);
 
 		$this->world->isInsideMap($move['x'], $move['y']);
+
+		$animal = $this->getWorld()->determineTheObject($move['x'], $move['y']);
+
+		if ($animal) {
+			$animal->KillTheAnimal();
+		}
 
 		$this->x = $move['x'];
 		$this->y = $move['y'];

@@ -1,35 +1,34 @@
 <?php
 class Mouse extends Animal {
-	public $symbol = "🐁";
-
 	protected $fears = array("Cat");
 
 	public function getSymbol() {
-		return $this->symbol;
+		return "🐁";
 	}
 
-	public function getAllMoves() {
+	public function getAllMoves($x, $y) {
 		$moves = array();
 
-		$fromX = $this->getX() - $this->getSpeed();
-		$toX = $this->getX() + $this->getSpeed();
+		$fromX = $x - $this->getSpeed();
+		$toX = $x + $this->getSpeed();
 
-		$fromY = $this->getY() - $this->getSpeed();
-		$toY = $this->getY() + $this->getSpeed();
+		$fromY = $y - $this->getSpeed();
+		$toY = $y + $this->getSpeed();
 
-		for ($x = $fromX; $x <= $toX; $x++) {
-			for ($y = $fromY; $y <= $toY; $y++) {
-				if ($this->getWorld()->isInsideMap($x, $y) or $this->getWorld()->determineTheObject($x, $y)) {
+		for ($forX = $fromX; $forX <= $toX; $forX++) {
+			for ($forY = $fromY; $forY <= $toY; $forY++) {
+				if ($this->getWorld()->isInsideMap($forX, $forY) or $this->getWorld()->determineTheObject($forX, $forY)) {
+
 					continue;
 				}
 
-				if (($x > $this->getX() and $y > $this->getY()) or ($x > $this->getX() and $y < $this->getY()) or ($x < $this->getX() and $y > $this->getY()) or ($x < $this->getX() and $y < $this->getY())) {
+				if (($forX > $x and $forY > $y) or ($forX > $x and $forY < $y) or ($forX < $x and $forY > $y) or ($forX < $x and $forY < $y)) {
 					continue;
 				}
 
 				$moves[] = array(
-					'x' => $x,
-					'y' => $y
+					'x' => $forX,
+					'y' => $forY
 				);
 			}
 		}
@@ -40,10 +39,24 @@ class Mouse extends Animal {
 	public function rateMove($x, $y, $search) {
 		$rate = 0;
 
-		foreach ($search as $object) {
-			$distance = abs(sqrt((($x - $object->getX())**2) + (($y - $object->getY())**2)));
+		$nearestAnimal = $this->foundTheNearestAnimal($search);
 
-			$rate += $distance;
+		foreach ($search as $object) {
+			$distance = max(abs($x - $object->getX()), abs($y - $object->getY()));
+
+			$movesCount = $this->howManyMovesWillDoAnimal($object, $distance); //Нужна ли проверка is_a($object, "Animal")?
+
+			$preRate = $movesCount;
+
+			if ($object == $nearestAnimal) {
+				$preRate = $preRate * 1.5;
+			}
+
+			$rate += $preRate;
+		}
+
+		if (!$this->isItCorner($x, $y)) {
+			$rate = $rate * 1.5;
 		}
 
 		return $rate;
@@ -72,13 +85,12 @@ class Mouse extends Animal {
 
 	public function move() {
 		if ($this->isItDie()) {
-			//Почему-то здесь код крашиться, если использвовать throw new Exception(" - They Die ~((‡> <br>");
-			echo " - They Die ~((‡> <br>";
+			throw new Exception(" - They Die ~((‡> <br>");
 		}
 
 		//$overview = $this->world->overviewWorld($this);
 
-		$moves = $this->getAllMoves();
+		$moves = $this->getAllMoves($this->getX(), $this->getY());
 
 		$scary = $this->searchAnimalsAroundByType($this, $this->getFears());
 
