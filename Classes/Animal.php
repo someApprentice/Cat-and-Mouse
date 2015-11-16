@@ -10,6 +10,9 @@ abstract class Animal {
 
 	protected $world;
 
+	protected $fears;
+	protected $tracks;
+
 	public function __construct($x = 0, $y = 0, $view = 1, $speed = 1) {
 		$this->view = $view;
 		$this->speed = $speed;
@@ -20,13 +23,15 @@ abstract class Animal {
 		$this->die = false;
 	}
 
-	public function returnWorldToTheAnimal($world) {
-		$this->world = $world;
-	}
+	//You must return symbol of animal. 
+	//return "🐒";
+	abstract function getSymbol();
 
-	public function deleteWorldFromTheAnimal() {
-		$this->world = false; //Так правильно?
-	}
+	abstract function getAllMoves($x, $y);
+
+	abstract function rateMoves($moves, $search);
+
+	abstract public function move();
 
 	public function getCoordinate() {
 		return ['x' => $this->x, 'y' => $this->y];
@@ -48,75 +53,59 @@ abstract class Animal {
 		return $this->speed;
 	}
 
-	public function getFears() {
-		return $this->fears;
-	}
-
-	public function getTracks() {
-		return $this->tracks;
-	}
-
 	public function isItDie() {
 		return $this->die;
 	}
 
-	//You must return the symbol of the animal. 
-	//return "🐒";
-	abstract function getSymbol();
+	public function makeDead() {
+		$this->die = true;
 
-	public function getWorld() {
+		$this->getWorld()->removeAnimalFromMap($this);
+	}
+
+	public function returnWorldToTheAnimal(World $world) {
+		$this->world = $world;
+	}
+
+	public function deleteWorldFromTheAnimal() {
+		$this->world = null;
+	}
+
+	protected function getFears() {
+		return $this->fears;
+	}
+
+	protected function getTracks() {
+		return $this->tracks;
+	}
+
+	protected function getWorld() {
 		return $this->world;
 	}  
 
-	public function searchAnimalsAroundByType(Animal $animal, array $types) {
-		$overview = $this->getWorld()->overviewWorld($animal);
-
-		$search = new SplObjectStorage();
-
-		foreach($overview as $object) {
-			foreach ($types as $type) {
-
-				if (get_class($object) == $type) {
-					$search->attach($object);
-				}
-			}	
-		}
-
-		return $search;
-	}
-
-	public function foundTheNearestAnimal($search) {
+	protected function foundTheNearestAnimal($search) {
 		$animals = array();
 
 		foreach ($search as $object) {
 			$distance = $this->getWorld()->calculateDistance($this, $object);
 
-			$animals[] = array('object' => $object, 'distance' => $distance); 
+			$animals[$distance] = $object; 
 		}
 
-		usort($animals, function($a, $b) {
-		    if ($a['distance'] == $b['distance']) {
-			        return 0;
-			    }
-			    
-			    return ($a['distance'] < $b['distance']) ? -1 : 1;
-			}
-		);	
+		ksort($animals);
 
 		$nearestAnimal = array_shift($animals);
 
-		return $nearestAnimal['object'];	
+		return $nearestAnimal;	
 	}
 
-	abstract function getAllMoves($x, $y);
-
-	public function isItNotOneOfTrack($x, $y, $tracks) {
+	protected function isItNotOneOfTrack($x, $y, $tracks) {
 		$object = $this->getWorld()->determineTheObject($x, $y);
 
 		if ($object) {
 			foreach ($tracks as $track) {
 				if (get_class($object) == $track) {
-					return false;
+					return true;
 				}
 			}
 		}
@@ -124,7 +113,7 @@ abstract class Animal {
 		return $object;
 	}
 
-	public function isItCorner($x, $y) {
+	protected function isItCorner($x, $y) {
 		$maxCountOfMoves = (($this->getSpeed() * 2) + 1)**2;
 
 		$countMovesFromThisCoordinate = count($this->getAllMoves($x, $y));
@@ -136,7 +125,7 @@ abstract class Animal {
 		return true;
 	}
 
-	public function howManyMovesWillDoAnimal(Animal $animal, $distance) {
+	protected function howManyMovesWillDoAnimal(Animal $animal, $distance) {
 		if ($distance == 0) {
 			return $distance;
 		}
@@ -146,9 +135,7 @@ abstract class Animal {
 		return $movesCount;
 	}
 
-	abstract function rateMoves($moves, $search);
-
-	public function chooseTheMovement($ratedMoves) {
+	protected function chooseTheMovement($ratedMoves) {
 		usort($ratedMoves, function($a, $b) {
 		    if ($a['score'] == $b['score']) {
 			        return 0;
@@ -158,19 +145,8 @@ abstract class Animal {
 			}
 		);
 
-		$ratedMoves = array_shift($ratedMoves);
+		$bestMove = array_shift($ratedMoves);
 
-		return $ratedMoves;
-	
-	}
-
-	abstract public function move();
-
-	public function KillTheAnimal() {
-		$this->die = true;
-
-		$this->getWorld()->removeAnimalFromMap($this);
-
-		return true;
+		return $bestMove;
 	}
 }

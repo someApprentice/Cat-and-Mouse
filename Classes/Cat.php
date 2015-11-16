@@ -18,7 +18,10 @@ class Cat extends Animal {
 
 		for ($forX = $fromX; $forX <= $toX; $forX++) {
 			for ($forY = $fromY; $forY <= $toY; $forY++) {
-				if ($this->getWorld()->isInsideMap($forX, $forY) or $this->isItNotOneOfTrack($forX, $forY, $this->getTracks())) {
+				$isInsideMap = $this->getWorld()->isInsideMap($forX, $forY);
+				$isNotTracked = $this->isItNotOneOfTrack($forX, $forY, $this->getTracks());
+
+				if (!$isInsideMap or $isNotTracked) {
 					continue;
 				}
 
@@ -75,23 +78,19 @@ class Cat extends Animal {
 		//$overview = $this->world->overviewWorld($this);
 		$moves = $this->getAllMoves($this->getX(), $this->getY());
 
-		$track = $this->searchAnimalsAroundByType($this, $this->getTracks());
+		$track = $this->getWorld()->searchAnimalsAroundByType($this, $this->getTracks());
 
 		$ratedMoves = $this->rateMoves($moves, $track);
 
 		$move = $this->chooseTheMovement($ratedMoves);
 
-		$this->world->isInsideMap($move['x'], $move['y']);
-
 		$animal = $this->getWorld()->determineTheObject($move['x'], $move['y']);
 
 		if ($animal) {
-			$animal->KillTheAnimal();
+			$animal->makeDead();
 		}
 
 		$this->x = $move['x'];
 		$this->y = $move['y'];
-
-		return $move;
 	}	
 }

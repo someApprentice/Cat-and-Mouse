@@ -35,7 +35,9 @@ class World {
 
 		foreach ($map as $object) {
 			if ($this->determineTheObject($animal->getX(), $animal->getY())) {
-				throw new Exception("In this coordinate ({$animal->getX()}, {$animal->getY()}) already have it object - {get_class($animal)}");
+				$objectName = get_class($animal);
+
+				throw new Exception("In this coordinate ({$animal->getX()}, {$animal->getY()}) already have it object - {$objectName}");
 			}
 		}
 
@@ -68,15 +70,32 @@ class World {
 		return $overview;
 	}
 
+	public function searchAnimalsAroundByType(Animal $animal, array $types) {
+		$overview = $this->overviewWorld($animal);
+
+		$search = new SplObjectStorage();
+
+		foreach($overview as $object) {
+			foreach ($types as $type) {
+
+				if (get_class($object) == $type) {
+					$search->attach($object);
+				}
+			}	
+		}
+
+		return $search;
+	}
+
 
 	public function isInsideMap($x, $y) {
 		if ($x > $this->width or $x < 0 or $y > $this->height or $y < 0) {
 			//throw new Exception("x or y are outside of the border map");
 
-			return true;
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	public function determineTheObject($x, $y) {

@@ -17,12 +17,12 @@ class Mouse extends Animal {
 
 		for ($forX = $fromX; $forX <= $toX; $forX++) {
 			for ($forY = $fromY; $forY <= $toY; $forY++) {
-				if ($this->getWorld()->isInsideMap($forX, $forY) or $this->getWorld()->determineTheObject($forX, $forY)) {
+				$isInsideMap = $this->getWorld()->isInsideMap($forX, $forY);
+				$isOccupied = $this->getWorld()->determineTheObject($forX, $forY);
+				$isStraightMove = ($x == $forX || $y == $forY);
 
-					continue;
-				}
+				if (!$isInsideMap or $isOccupied or !$isStraightMove) {
 
-				if (($forX > $x and $forY > $y) or ($forX > $x and $forY < $y) or ($forX < $x and $forY > $y) or ($forX < $x and $forY < $y)) {
 					continue;
 				}
 
@@ -38,6 +38,8 @@ class Mouse extends Animal {
 
 	public function rateMove($x, $y, $search) {
 		$rate = 0;
+		$factorOfNearestAnimal = 0;
+		$fatorOfCorner = 0;
 
 		$nearestAnimal = $this->foundTheNearestAnimal($search);
 
@@ -46,18 +48,18 @@ class Mouse extends Animal {
 
 			$movesCount = $this->howManyMovesWillDoAnimal($object, $distance); //Нужна ли проверка is_a($object, "Animal")?
 
-			$preRate = $movesCount;
+			$rate = $movesCount;
 
 			if ($object == $nearestAnimal) {
-				$preRate = $preRate * 1.5;
+				$factorOfNearestAnimal = 1.5;
 			}
-
-			$rate += $preRate;
 		}
 
 		if (!$this->isItCorner($x, $y)) {
-			$rate = $rate * 1.5;
+			$fatorOfCorner = 1.5;
 		}
+
+		$rate = $rate + ($rate * $factorOfNearestAnimal) + ($rate * $fatorOfCorner);
 
 		return $rate;
 	}
@@ -92,17 +94,13 @@ class Mouse extends Animal {
 
 		$moves = $this->getAllMoves($this->getX(), $this->getY());
 
-		$scary = $this->searchAnimalsAroundByType($this, $this->getFears());
+		$scary = $this->getWorld()->searchAnimalsAroundByType($this, $this->getFears());
 
 		$ratedMoves = $this->rateMoves($moves, $scary);
 
 		$move = $this->chooseTheMovement($ratedMoves);
-
-		$this->world->isInsideMap($move['x'], $move['y']);
 		
 		$this->x = $move['x'];
 		$this->y = $move['y'];
-
-		return $move;
 	}
 }
