@@ -118,15 +118,16 @@ abstract class Animal {
 	//(количество ходов из угла примерно в два раза меньше чем количество ходов из центра),
 	//то возвращается true 
 	protected function isItCorner($x, $y) {
-		$maxCountOfMoves = (($this->getSpeed() * 2) + 1)**2;
+		$mapX = $this->getWorld()->getWidth();
+		$mapY = $this->getWorld()->getHeight();
 
-		$countMovesFromThisCoordinate = count($this->getAllMoves($x, $y));
+		$isItCorner = (($x == $mapX and $y == $mapY) or ($x == 1 and $y == $mapY) or ($x == $mapX and $y == 1) or ($x == 1 and $y == 1));
 
-		if ($countMovesFromThisCoordinate > ($maxCountOfMoves / 2)) {
+		if ($isItCorner) { //Будет ли лучше\короче обойтись без return true: if (!$isItCorner) return false;?
+			return true;
+		} else {
 			return false;
 		}
-
-		return true;
 	}
 
 	protected function howManyMovesWillDoAnimal(Animal $animal, $distance) {
