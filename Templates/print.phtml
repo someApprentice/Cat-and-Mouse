@@ -1,8 +1,8 @@
 <table>
-	<?php for ($y = $world->getHeight(); $y >= 0; $y--): ?>
+	<?php for ($y = $world->getHeight(); $y >= 1; $y--): ?>
 		<tr>
 			<td><?=$y?></td>
-			<?php for ($x = 0; $x <= $world->getWidth(); $x++): ?>
+			<?php for ($x = 1; $x <= $world->getWidth(); $x++): ?>
 				<td>
 					<?php foreach ($world->getAllAnimals() as $object): ?>
 						<?php if ($object->getX() == $x and $object->getY() == $y): ?>
@@ -16,7 +16,7 @@
 	<tr>
 		<td></td>
 		
-		<?php for ($x = 0; $x <= $world->getWidth(); $x++): ?>
+		<?php for ($x = 1; $x <= $world->getWidth(); $x++): ?>
 			<td><?=$x?></td>
 		<?php endfor; ?>
 	</tr>

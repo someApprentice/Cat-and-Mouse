@@ -35,9 +35,11 @@ class Cat extends Animal {
 		return $moves;
 	}
 
-	public function rateMove($x, $y, $search) {
+	public function rateMove($x, $y) {
 		$rate = 0;
 		
+		$search = $this->getWorld()->searchAnimalsAroundByType($this, $this->getTracks());
+
 		foreach ($search as $object) {
 			$distance = max(abs($x - $object->getX()), abs($y - $object->getY()));
 
@@ -55,32 +57,11 @@ class Cat extends Animal {
 		return $rate;		
 	}
 
-	public function rateMoves($moves, $search) {
-		$ratedMoves = array();
-
-		foreach ($moves as $move) {
-			$x = $move['x'];
-			$y = $move['y'];
-
-			$rate = $this->rateMove($move['x'], $move['y'], $search);
-
-			$ratedMoves[] = array(
-				'x' => $x,
-				'y' => $y,
-				'score' => $rate
-			);
-		}
-
-		return $ratedMoves;
-	}
-
 	public function move() {
 		//$overview = $this->world->overviewWorld($this);
 		$moves = $this->getAllMoves($this->getX(), $this->getY());
 
-		$track = $this->getWorld()->searchAnimalsAroundByType($this, $this->getTracks());
-
-		$ratedMoves = $this->rateMoves($moves, $track);
+		$ratedMoves = $this->rateMoves($moves);
 
 		$move = $this->chooseTheMovement($ratedMoves);
 

@@ -36,54 +36,38 @@ class Mouse extends Animal {
 		return $moves;
 	}
 
-	public function rateMove($x, $y, $search) {
+	public function rateMove($x, $y) {
 		$rate = 0;
 		$factorOfNearestAnimal = 0;
-		$fatorOfCorner = 0;
+		$factorOfCorner = 0;
+
+		$search = $this->getWorld()->searchAnimalsAroundByType($this, $this->getFears());
 
 		$nearestAnimal = $this->foundTheNearestAnimal($search);
 
 		foreach ($search as $object) {
 			$distance = max(abs($x - $object->getX()), abs($y - $object->getY()));
 
-			$movesCount = $this->howManyMovesWillDoAnimal($object, $distance); //Нужна ли проверка is_a($object, "Animal")?
+			$movesCount = $this->howManyMovesWillDoAnimal($object, $distance);
 
-			$rate = $movesCount;
+			$rate += $movesCount;
 
-			if ($object == $nearestAnimal) {
-				$factorOfNearestAnimal = 1.5;
+			//За расстояние от ближайщего животного дается больше балов
+			if ($object === $nearestAnimal) {
+				$factorOfNearestAnimal = 0.5;
+
+				$rateOfNearestAnimal = $movesCount * $factorOfNearestAnimal;
 			}
 		}
 
 		if (!$this->isItCorner($x, $y)) {
-			$fatorOfCorner = 1.5;
+			$factorOfCorner = 0.5;
 		}
 
-		$rate = $rate + ($rate * $factorOfNearestAnimal) + ($rate * $fatorOfCorner);
+		$rate = $rate + ($rateOfNearestAnimal) + ($rate * $factorOfCorner);
 
 		return $rate;
 	}
-
-	public function rateMoves($moves, $search) {
-		$ratedMoves = array();
-
-		foreach ($moves as $move) {
-			$x = $move['x'];
-			$y = $move['y'];
-
-			$rate = $this->rateMove($move['x'], $move['y'], $search);
-
-			$ratedMoves[] = array(
-				'x' => $x,
-				'y' => $y,
-				'score' => $rate
-			);
-		}
-
-
-		return $ratedMoves;
-	}
-
 
 	public function move() {
 		if ($this->isItDie()) {
@@ -94,9 +78,7 @@ class Mouse extends Animal {
 
 		$moves = $this->getAllMoves($this->getX(), $this->getY());
 
-		$scary = $this->getWorld()->searchAnimalsAroundByType($this, $this->getFears());
-
-		$ratedMoves = $this->rateMoves($moves, $scary);
+		$ratedMoves = $this->rateMoves($moves);
 
 		$move = $this->chooseTheMovement($ratedMoves);
 		

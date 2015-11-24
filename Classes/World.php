@@ -33,12 +33,14 @@ class World {
 	public function addAnimal(Animal $animal) {
 		$map = $this->getAllAnimals();
 
-		foreach ($map as $object) {
-			if ($this->determineTheObject($animal->getX(), $animal->getY())) {
-				$objectName = get_class($animal);
+		if (!$this->isInsideMap($animal->getX(), $animal->getY())) {
+			$animalName = get_class($animal);
 
-				throw new Exception("In this coordinate ({$animal->getX()}, {$animal->getY()}) already have it object - {$objectName}");
-			}
+			throw new Exception("Object {$animalName} in {$animal->getX()}, {$animal->getY()} outside from map!");
+		}
+
+		if ($objectName = $this->determineTheObject($animal->getX(), $animal->getY())) {
+			throw new Exception("In this coordinate ({$animal->getX()}, {$animal->getY()}) already have it object - {$objectName}");
 		}
 
 		$this->map->attach($animal);
@@ -58,7 +60,7 @@ class World {
 		$overview = new SplObjectStorage();
 
 		foreach($map as $object) {
-			if ($object == $animal) {
+			if ($object === $animal) {
 				continue;
 			}
 
@@ -89,7 +91,7 @@ class World {
 
 
 	public function isInsideMap($x, $y) {
-		if ($x > $this->width or $x < 0 or $y > $this->height or $y < 0) {
+		if ($x > $this->width or $x < 1 or $y > $this->height or $y < 1) {
 			//throw new Exception("x or y are outside of the border map");
 
 			return false;

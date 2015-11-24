@@ -29,7 +29,7 @@ abstract class Animal {
 
 	abstract function getAllMoves($x, $y);
 
-	abstract function rateMoves($moves, $search);
+	abstract function rateMove($x, $y);
 
 	abstract public function move();
 
@@ -105,7 +105,7 @@ abstract class Animal {
 		if ($object) {
 			foreach ($tracks as $track) {
 				if (get_class($object) == $track) {
-					return true;
+					return false;
 				}
 			}
 		}
@@ -113,6 +113,10 @@ abstract class Animal {
 		return $object;
 	}
 
+	//Берутся все ходы от текущей координаты
+	//и если их количество меньше количества всех возможных ходов деленных на 2
+	//(количество ходов из угла примерно в два раза меньше чем количество ходов из центра),
+	//то возвращается true 
 	protected function isItCorner($x, $y) {
 		$maxCountOfMoves = (($this->getSpeed() * 2) + 1)**2;
 
@@ -135,7 +139,26 @@ abstract class Animal {
 		return $movesCount;
 	}
 
-	protected function chooseTheMovement($ratedMoves) {
+	protected function rateMoves(array $moves) {
+		$ratedMoves = array();
+
+		foreach ($moves as $move) {
+			$x = $move['x'];
+			$y = $move['y'];
+
+			$rate = $this->rateMove($move['x'], $move['y']);
+
+			$ratedMoves[] = array(
+				'x' => $x,
+				'y' => $y,
+				'score' => $rate
+			);
+		}
+
+		return $ratedMoves;		
+	}
+
+	protected function chooseTheMovement(array $ratedMoves) {
 		usort($ratedMoves, function($a, $b) {
 		    if ($a['score'] == $b['score']) {
 			        return 0;
