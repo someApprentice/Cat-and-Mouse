@@ -83,7 +83,7 @@ abstract class Animal {
 		return $this->world;
 	}  
 
-	protected function foundTheNearestAnimal($search) {
+	protected function foundTheNearestAnimal(object $search) {
 		$animals = array();
 
 		foreach ($search as $object) {
@@ -99,7 +99,7 @@ abstract class Animal {
 		return $nearestAnimal;	
 	}
 
-	protected function isItNotOneOfTrack($x, $y, $tracks) {
+	protected function isItNotOneOfTrack($x, $y, array $tracks) {
 		$object = $this->getWorld()->determineTheObject($x, $y);
 
 		if ($object) {
@@ -123,11 +123,7 @@ abstract class Animal {
 
 		$isItCorner = (($x == $mapX and $y == $mapY) or ($x == 1 and $y == $mapY) or ($x == $mapX and $y == 1) or ($x == 1 and $y == 1));
 
-		if ($isItCorner) { //Будет ли лучше\короче обойтись без return true: if (!$isItCorner) return false;?
-			return true;
-		} else {
-			return false;
-		}
+		return $isItCorner;
 	}
 
 	protected function howManyMovesWillDoAnimal(Animal $animal, $distance) {
