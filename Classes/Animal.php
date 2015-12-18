@@ -83,7 +83,7 @@ abstract class Animal {
 		return $this->world;
 	}  
 
-	protected function foundTheNearestAnimal(object $search) {
+	protected function foundTheNearestAnimal(SplObjectStorage $search) {
 		$animals = array();
 
 		foreach ($search as $object) {
