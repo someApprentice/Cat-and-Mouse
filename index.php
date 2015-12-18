@@ -1,6 +1,6 @@
 <?php
-require_once 'autoload.php';
-require_once 'game.php';
+require_once __DIR__ . '/autoload.php';
+require_once __DIR__ . '/game.php';
 ?>
 
 <!DOCTYPE html>
@@ -12,7 +12,7 @@ require_once 'game.php';
    <body>
       Turn: 0 <br>
 
-      <?php require '/Templates/print.phtml'; ?>
+      <?php require __DIR__ . '/Templates/print.phtml'; ?>
       <br>
 
       <?php for ($i = 1; $i <= 10; $i++): ?>
@@ -22,7 +22,7 @@ require_once 'game.php';
             $world->moveAllAnimals();
          ?>
 
-         <?php require '/Templates/print.phtml'; ?>
+         <?php require __DIR__ .'/Templates/print.phtml'; ?>
 
          <br>
       <?php endfor; ?>
